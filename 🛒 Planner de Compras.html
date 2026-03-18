@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)file:///C:/Users/WINDOWS/Downloads/index.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>🛒 Planner de Compras</title>
+<link href="./🛒 Planner de Compras_files/css2" rel="stylesheet">
+<style>
+  :root {
+    --cream: #fdf8f2;
+    --warm-white: #fffdf9;
+    --blush: #f2c4b0;
+    --sage: #a8b89a;
+    --sage-dark: #7a9068;
+    --terracotta: #c4715e;
+    --gold: #c9a96e;
+    --gold-light: #e8d5a3;
+    --peach: #f0c4a8;
+    --text-dark: #3d2f28;
+    --text-mid: #6b4f42;
+    --text-light: #9b7a6e;
+    --border: #e8d5c4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: #ede6dc;
+    font-family: 'Lato', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding-bottom: 90px; /* space for bottom bar */
+  }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    background: linear-gradient(135deg, #fdf8f2, #f0e0d0);
+    border-bottom: 2px solid var(--border);
+    padding: 16px 18px 14px 18px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(61,47,40,0.1);
+  }
+
+  .top-bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .top-title h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.1;
+  }
+
+  .top-title h1 span { font-style: italic; color: var(--terracotta); }
+
+  .top-title .sub {
+    font-family: 'Dancing Script', cursive;
+    font-size: 0.85rem;
+    color: var(--text-light);
+  }
+
+  .budget-pill {
+    background: linear-gradient(135deg, var(--gold-light), var(--peach));
+    border: 1.5px solid var(--gold);
+    border-radius: 12px;
+    padding: 6px 12px;
+    text-align: center;
+    min-width: 110px;
+    flex-shrink: 0;
+  }
+
+  .budget-pill label {
+    display: block;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-mid);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .budget-pill input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-align: center;
+    width: 90px;
+    outline: none;
+  }
+
+  /* meta fields row */
+  .meta-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .meta-item label {
+    display: block;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-light);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .meta-item input {
+    width: 100%;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.82rem;
+    color: var(--text-dark);
+    padding: 6px 8px;
+    outline: none;
+  }
+
+  .meta-item input:focus { border-color: var(--terracotta); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-section {
+    padding: 8px 18px;
+    background: #f5ede0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .progress-bar-outer {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--sage-dark));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-pct {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--sage-dark);
+    min-width: 34px;
+    text-align: right;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ── CATEGORY CARD ── */
+  .category { border-radius: 14px; overflow: visible; }
+
+  .cat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 14px;
+    border-radius: 12px 12px 0 0;
+    cursor: pointer;
+    user-select: none;
+    min-height: 54px;
+  }
+
+  .cat-left { display: flex; align-items: center; gap: 10px; }
+  .cat-emoji { font-size: 1.5rem; }
+
+  .cat-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .cat-count {
+    font-size: 0.7rem;
+    font-weight: 700;
+    opacity: 0.6;
+    margin-left: 2px;
+  }
+
+  .cat-actions { display: flex; gap: 8px; align-items: center; }
+
+  .add-item-btn {
+    background: rgba(255,255,255,0.6);
+    border: 1.5px dashed rgba(255,255,255,0.9);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    font-family: 'Lato', sans-serif;
+    cursor: pointer;
+    color: inherit;
+    font-weight: 700;
+    min-height: 32px;
+  }
+
+  .cat-toggle {
+    width: 30px; height: 30px;
+    border: none;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: inherit;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+
+  .cat-toggle.collapsed { transform: rotate(-90deg); }
+
+  /* body */
+  .cat-body { border: 1.5px solid; border-top: none; border-radius: 0 0 12px 12px; overflow: hidden; }
+  .cat-body.collapsed { display: none; }
+
+  /* ── ITEM CARD (mobile uses cards instead of table rows) ── */
+  .item-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px dashed rgba(0,0,0,0.08);
+    transition: background 0.15s;
+  }
+
+  .item-card:last-child { border-bottom: none; }
+  .item-card.done { opacity: 0.45; }
+
+  /* big check button for touch */
+  .check-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .check-btn.checked {
+    background: var(--sage);
+    border-color: var(--sage-dark);
+    color: white;
+  }
+
+  .item-main { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+
+  .item-name-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    width: 100%;
+    outline: none;
+    padding: 2px 0;
+    font-weight: 400;
+  }
+
+  .item-name-input:focus { border-bottom-color: var(--gold); }
+  .item-name-input::placeholder { color: #ccc; font-style: italic; }
+  .item-card.done .item-name-input { text-decoration: line-through; }
+
+  .item-sub-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .sub-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-light);
+    font-weight: 700;
+  }
+
+  .item-sub-input {
+    background: rgba(0,0,0,0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-dark);
+    padding: 3px 6px;
+    outline: none;
+    text-align: center;
+  }
+
+  .item-sub-input:focus { border-color: var(--gold); }
+  .item-sub-input.qty { width: 46px; }
+  .item-sub-input.unit { width: 54px; }
+  .item-sub-input.price { width: 64px; text-align: right; }
+
+  .del-btn {
+    background: transparent;
+    border: none;
+    color: #ddd;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px 6px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    min-width: 32px;
+    min-height: 32px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .del-btn:active { color: var(--terracotta); background: #fdecea; }
+
+  /* empty state */
+  .empty-cat {
+    padding: 16px;
+    text-align: center;
+    color: #ccc;
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+
+  /* ── TOTALS ── */
+  .totals-card {
+    background: linear-gradient(135deg, var(--cream), #f7ede0);
+    border-radius: 14px;
+    border: 1.5px solid var(--gold-light);
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .total-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .total-item label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-light);
+    font-weight: 700;
+  }
+
+  .total-item .value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .total-grand .value {
+    font-size: 1.3rem;
+    color: var(--terracotta);
+  }
+
+  .divider-v { width: 1px; height: 32px; background: var(--border); }
+
+  /* ── NOTES ── */
+  .notes-card {
+    background: #fdf8f0;
+    border-radius: 14px;
+    border: 1.5px dashed var(--gold-light);
+    padding: 14px 16px;
+  }
+
+  .notes-card label {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-light);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .notes-card textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    resize: vertical;
+    outline: none;
+    min-height: 70px;
+    line-height: 1.7;
+  }
+
+  /* ── BOTTOM ACTION BAR ── */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--warm-white);
+    border-top: 2px solid var(--border);
+    padding: 10px 14px 14px;
+    display: flex;
+    gap: 8px;
+    z-index: 200;
+    box-shadow: 0 -4px 20px rgba(61,47,40,0.1);
+  }
+
+  .bar-btn {
+    flex: 1;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--cream);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-mid);
+    cursor: pointer;
+    padding: 10px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    min-height: 52px;
+    transition: all 0.18s;
+  }
+
+  .bar-btn .icon { font-size: 1.1rem; }
+  .bar-btn:active { transform: scale(0.96); }
+
+  .bar-btn-save {
+    background: var(--sage);
+    border-color: var(--sage-dark);
+    color: white;
+  }
+
+  .bar-btn-new {
+    background: var(--cream);
+    border-color: var(--gold);
+    color: var(--text-mid);
+  }
+
+  .bar-btn-sort {
+    background: var(--cream);
+  }
+
+  .bar-btn-clear {
+    background: transparent;
+    border-color: #ddd;
+    color: #bbb;
+  }
+
+  /* ── CATEGORY THEMES ── */
+  .cat-hortifruti .cat-header { background: linear-gradient(135deg, #d4edda, #b8dfc4); color: #2d6a4f; }
+  .cat-hortifruti .cat-body  { border-color: #b8dfc4; background: #f5fbf7; }
+  .cat-pereciveis .cat-header { background: linear-gradient(135deg, #fde8d8, #f5c9a8); color: #834630; }
+  .cat-pereciveis .cat-body  { border-color: #f5c9a8; background: #fffaf6; }
+  .cat-nao-pereciveis .cat-header { background: linear-gradient(135deg, #e8d5f5, #d4b8e8); color: #5c3d7a; }
+  .cat-nao-pereciveis .cat-body  { border-color: #d4b8e8; background: #fdf8ff; }
+  .cat-higiene .cat-header { background: linear-gradient(135deg, #d4e8f5, #a8cde8); color: #1d4e6e; }
+  .cat-higiene .cat-body  { border-color: #a8cde8; background: #f6fbff; }
+  .cat-limpeza .cat-header { background: linear-gradient(135deg, #e8f5d4, #c8e8a8); color: #3a5c1a; }
+  .cat-limpeza .cat-body  { border-color: #c8e8a8; background: #f8fdf3; }
+  .cat-laticinios .cat-header { background: linear-gradient(135deg, #fff5d4, #f5e4a8); color: #7a5c10; }
+  .cat-laticinios .cat-body  { border-color: #f5e4a8; background: #fffdf5; }
+  .cat-bebidas .cat-header { background: linear-gradient(135deg, #fde4e4, #f5b8b8); color: #7a2020; }
+  .cat-bebidas .cat-body  { border-color: #f5b8b8; background: #fff8f8; }
+  .cat-outros .cat-header { background: linear-gradient(135deg, #ece8e0, #ddd4c4); color: #5c4c38; }
+  .cat-outros .cat-body  { border-color: #ddd4c4; background: #fdfaf5; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <div class="top-title">
+      <h1>Lista de <span>Compras</span></h1>
+      <div class="sub">organizado com carinho 🌿</div>
+    </div>
+    <div class="budget-pill">
+      <label>Orçamento</label>
+      <input type="text" id="budget" placeholder="R$ 0,00" inputmode="decimal">
+    </div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-item">
+      <label>Data</label>
+      <input type="text" id="meta-data" placeholder="dd/mm/aaaa">
+    </div>
+    <div class="meta-item">
+      <label>Mercado</label>
+      <input type="text" id="meta-local" placeholder="Nome do mercado">
+    </div>
+    <div class="meta-item">
+      <label>Responsável</label>
+      <input type="text" id="meta-resp" placeholder="Seu nome">
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-section">
+  <span class="progress-label">Progresso</span>
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progress-bar" style="width: 0%;"></div>
+  </div>
+  <span class="progress-pct" id="progress-pct">0%</span>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="content"><div class="category cat-hortifruti">
+      <div class="cat-header" onclick="toggleCat(0)">
+        <div class="cat-left">
+          <span class="cat-emoji">🥦</span>
+          <span class="cat-title">Hortifruti</span>
+          <span class="cat-count">(5)</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(0)">+ item</button>
+          <button class="cat-toggle ">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ">
+        
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(0,0)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Alface" oninput="updateField(0,0,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(0,0,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(0,0,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(0,0,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(0,0)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(0,1)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Tomate" oninput="updateField(0,1,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(0,1,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(0,1,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(0,1,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(0,1)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(0,2)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Banana" oninput="updateField(0,2,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(0,2,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(0,2,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(0,2,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(0,2)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(0,3)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Maçã" oninput="updateField(0,3,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(0,3,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(0,3,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(0,3,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(0,3)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(0,4)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Cebola" oninput="updateField(0,4,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(0,4,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(0,4,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(0,4,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(0,4)">✕</button>
+      </div>
+    
+      </div>
+    </div><div class="category cat-pereciveis">
+      <div class="cat-header" onclick="toggleCat(1)">
+        <div class="cat-left">
+          <span class="cat-emoji">🥩</span>
+          <span class="cat-title">Perecíveis</span>
+          <span class="cat-count">(5)</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(1)">+ item</button>
+          <button class="cat-toggle ">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ">
+        
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(1,0)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Frango" oninput="updateField(1,0,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(1,0,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(1,0,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(1,0,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(1,0)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(1,1)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Carne Bovina" oninput="updateField(1,1,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(1,1,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(1,1,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(1,1,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(1,1)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(1,2)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Peixe" oninput="updateField(1,2,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(1,2,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(1,2,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(1,2,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(1,2)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(1,3)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Ovos" oninput="updateField(1,3,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(1,3,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="dúzia" oninput="updateField(1,3,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(1,3,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(1,3)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(1,4)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Frios" oninput="updateField(1,4,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(1,4,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="g" oninput="updateField(1,4,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(1,4,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(1,4)">✕</button>
+      </div>
+    
+      </div>
+    </div><div class="category cat-laticinios">
+      <div class="cat-header" onclick="toggleCat(2)">
+        <div class="cat-left">
+          <span class="cat-emoji">🧀</span>
+          <span class="cat-title">Laticínios</span>
+          <span class="cat-count">(5)</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(2)">+ item</button>
+          <button class="cat-toggle ">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ">
+        
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(2,0)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Leite Integral" oninput="updateField(2,0,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(2,0,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="L" oninput="updateField(2,0,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(2,0,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(2,0)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(2,1)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Iogurte" oninput="updateField(2,1,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(2,1,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(2,1,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(2,1,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(2,1)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(2,2)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Queijo Mussarela" oninput="updateField(2,2,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(2,2,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="g" oninput="updateField(2,2,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(2,2,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(2,2)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(2,3)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Manteiga" oninput="updateField(2,3,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(2,3,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(2,3,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(2,3,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(2,3)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(2,4)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Creme de Leite" oninput="updateField(2,4,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(2,4,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="cx" oninput="updateField(2,4,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(2,4,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(2,4)">✕</button>
+      </div>
+    
+      </div>
+    </div><div class="category cat-nao-pereciveis">
+      <div class="cat-header" onclick="toggleCat(3)">
+        <div class="cat-left">
+          <span class="cat-emoji">🥫</span>
+          <span class="cat-title">Não Perecíveis</span>
+          <span class="cat-count">(7)</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(3)">+ item</button>
+          <button class="cat-toggle ">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ">
+        
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(3,0)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Arroz" oninput="updateField(3,0,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(3,0,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(3,0,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(3,0,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(3,0)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(3,1)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Feijão" oninput="updateField(3,1,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(3,1,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(3,1,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(3,1,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(3,1)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(3,2)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Macarrão" oninput="updateField(3,2,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(3,2,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="pct" oninput="updateField(3,2,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(3,2,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(3,2)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(3,3)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Açúcar" oninput="updateField(3,3,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(3,3,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(3,3,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(3,3,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(3,3)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(3,4)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Azeite" oninput="updateField(3,4,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(3,4,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(3,4,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(3,4,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(3,4)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(3,5)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Farinha de Trigo" oninput="updateField(3,5,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(3,5,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(3,5,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(3,5,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(3,5)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(3,6)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Café" oninput="updateField(3,6,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(3,6,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="pct" oninput="updateField(3,6,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(3,6,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(3,6)">✕</button>
+      </div>
+    
+      </div>
+    </div><div class="category cat-bebidas">
+      <div class="cat-header" onclick="toggleCat(4)">
+        <div class="cat-left">
+          <span class="cat-emoji">🧃</span>
+          <span class="cat-title">Bebidas</span>
+          <span class="cat-count">(3)</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(4)">+ item</button>
+          <button class="cat-toggle ">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ">
+        
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(4,0)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Água Mineral" oninput="updateField(4,0,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(4,0,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="pack" oninput="updateField(4,0,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(4,0,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(4,0)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(4,1)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Suco de Fruta" oninput="updateField(4,1,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(4,1,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="L" oninput="updateField(4,1,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(4,1,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(4,1)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(4,2)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Refrigerante" oninput="updateField(4,2,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(4,2,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="L" oninput="updateField(4,2,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(4,2,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(4,2)">✕</button>
+      </div>
+    
+      </div>
+    </div><div class="category cat-higiene">
+      <div class="cat-header" onclick="toggleCat(5)">
+        <div class="cat-left">
+          <span class="cat-emoji">🧴</span>
+          <span class="cat-title">Higiene Pessoal</span>
+          <span class="cat-count">(6)</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(5)">+ item</button>
+          <button class="cat-toggle ">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ">
+        
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(5,0)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Shampoo" oninput="updateField(5,0,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(5,0,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(5,0,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(5,0,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(5,0)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(5,1)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Condicionador" oninput="updateField(5,1,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(5,1,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(5,1,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(5,1,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(5,1)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(5,2)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Sabonete" oninput="updateField(5,2,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(5,2,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(5,2,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(5,2,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(5,2)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(5,3)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Creme Dental" oninput="updateField(5,3,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(5,3,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(5,3,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(5,3,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(5,3)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(5,4)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Desodorante" oninput="updateField(5,4,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(5,4,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(5,4,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(5,4,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(5,4)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(5,5)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Papel Higiênico" oninput="updateField(5,5,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(5,5,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="pct" oninput="updateField(5,5,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(5,5,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(5,5)">✕</button>
+      </div>
+    
+      </div>
+    </div><div class="category cat-limpeza">
+      <div class="cat-header" onclick="toggleCat(6)">
+        <div class="cat-left">
+          <span class="cat-emoji">🧹</span>
+          <span class="cat-title">Limpeza</span>
+          <span class="cat-count">(6)</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(6)">+ item</button>
+          <button class="cat-toggle ">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ">
+        
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(6,0)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Detergente" oninput="updateField(6,0,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(6,0,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(6,0,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(6,0,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(6,0)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(6,1)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Sabão em Pó" oninput="updateField(6,1,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(6,1,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="kg" oninput="updateField(6,1,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(6,1,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(6,1)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(6,2)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Amaciante" oninput="updateField(6,2,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(6,2,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="L" oninput="updateField(6,2,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(6,2,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(6,2)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(6,3)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Desinfetante" oninput="updateField(6,3,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(6,3,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="L" oninput="updateField(6,3,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(6,3,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(6,3)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(6,4)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Esponja" oninput="updateField(6,4,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(6,4,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="pct" oninput="updateField(6,4,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(6,4,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(6,4)">✕</button>
+      </div>
+    
+      <div class="item-card ">
+        <div class="check-btn " onclick="toggleDone(6,5)">
+          
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…" value="Limpador Multiuso" oninput="updateField(6,5,&#39;name&#39;,this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—" value="" oninput="updateField(6,5,&#39;qty&#39;,this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid" value="unid" oninput="updateField(6,5,&#39;unit&#39;,this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00" value="" oninput="updateField(6,5,&#39;price&#39;,this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(6,5)">✕</button>
+      </div>
+    
+      </div>
+    </div><div class="category cat-outros">
+      <div class="cat-header" onclick="toggleCat(7)">
+        <div class="cat-left">
+          <span class="cat-emoji">🛍️</span>
+          <span class="cat-title">Outros</span>
+          <span class="cat-count">(0)</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(7)">+ item</button>
+          <button class="cat-toggle ">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ">
+        <div class="empty-cat">Nenhum item — toque em "+ item"</div>
+      </div>
+    </div><div>
+    <div class="totals-card">
+      <div class="total-item"><label>Itens</label><div class="value">37</div></div>
+      <div class="divider-v"></div>
+      <div class="total-item"><label>Comprados</label><div class="value">0</div></div>
+      <div class="divider-v"></div>
+      <div class="total-item total-grand"><label>Total Est.</label><div class="value">R$ 0,00</div></div>
+    </div>
+  </div><div class="notes-card">
+    <label>✦ Observações &amp; Lembretes</label>
+    <textarea id="notes-area" placeholder="Lembretes, marcas preferidas, ofertas…"></textarea>
+  </div></div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <button class="bar-btn bar-btn-save" id="btn-salvar" onclick="salvarDados()">
+    <span class="icon">💾</span>Salvar
+  </button>
+  <button class="bar-btn bar-btn-new" onclick="addCategory()">
+    <span class="icon">✦</span>Categoria
+  </button>
+  <button class="bar-btn bar-btn-sort" onclick="sortAllAlpha()">
+    <span class="icon">🔤</span>A–Z
+  </button>
+  <button class="bar-btn bar-btn-clear" onclick="clearChecked()">
+    <span class="icon">✕</span>Limpar
+  </button>
+</div>
+
+<script>
+// ── DADOS PADRÃO ──────────────────────────────────────────────────
+const CATEGORIES = [
+  { id:'hortifruti', label:'Hortifruti', emoji:'🥦', theme:'cat-hortifruti',
+    items:[{name:'Alface',qty:'',unit:'unid',price:''},{name:'Tomate',qty:'',unit:'kg',price:''},{name:'Banana',qty:'',unit:'kg',price:''},{name:'Maçã',qty:'',unit:'kg',price:''},{name:'Cebola',qty:'',unit:'kg',price:''}], collapsed:false },
+  { id:'pereciveis', label:'Perecíveis', emoji:'🥩', theme:'cat-pereciveis',
+    items:[{name:'Frango',qty:'',unit:'kg',price:''},{name:'Carne Bovina',qty:'',unit:'kg',price:''},{name:'Peixe',qty:'',unit:'kg',price:''},{name:'Ovos',qty:'',unit:'dúzia',price:''},{name:'Frios',qty:'',unit:'g',price:''}], collapsed:false },
+  { id:'laticinios', label:'Laticínios', emoji:'🧀', theme:'cat-laticinios',
+    items:[{name:'Leite Integral',qty:'',unit:'L',price:''},{name:'Iogurte',qty:'',unit:'unid',price:''},{name:'Queijo Mussarela',qty:'',unit:'g',price:''},{name:'Manteiga',qty:'',unit:'unid',price:''},{name:'Creme de Leite',qty:'',unit:'cx',price:''}], collapsed:false },
+  { id:'nao-pereciveis', label:'Não Perecíveis', emoji:'🥫', theme:'cat-nao-pereciveis',
+    items:[{name:'Arroz',qty:'',unit:'kg',price:''},{name:'Feijão',qty:'',unit:'kg',price:''},{name:'Macarrão',qty:'',unit:'pct',price:''},{name:'Açúcar',qty:'',unit:'kg',price:''},{name:'Azeite',qty:'',unit:'unid',price:''},{name:'Farinha de Trigo',qty:'',unit:'kg',price:''},{name:'Café',qty:'',unit:'pct',price:''}], collapsed:false },
+  { id:'bebidas', label:'Bebidas', emoji:'🧃', theme:'cat-bebidas',
+    items:[{name:'Água Mineral',qty:'',unit:'pack',price:''},{name:'Suco de Fruta',qty:'',unit:'L',price:''},{name:'Refrigerante',qty:'',unit:'L',price:''}], collapsed:false },
+  { id:'higiene', label:'Higiene Pessoal', emoji:'🧴', theme:'cat-higiene',
+    items:[{name:'Shampoo',qty:'',unit:'unid',price:''},{name:'Condicionador',qty:'',unit:'unid',price:''},{name:'Sabonete',qty:'',unit:'unid',price:''},{name:'Creme Dental',qty:'',unit:'unid',price:''},{name:'Desodorante',qty:'',unit:'unid',price:''},{name:'Papel Higiênico',qty:'',unit:'pct',price:''}], collapsed:false },
+  { id:'limpeza', label:'Limpeza', emoji:'🧹', theme:'cat-limpeza',
+    items:[{name:'Detergente',qty:'',unit:'unid',price:''},{name:'Sabão em Pó',qty:'',unit:'kg',price:''},{name:'Amaciante',qty:'',unit:'L',price:''},{name:'Desinfetante',qty:'',unit:'L',price:''},{name:'Esponja',qty:'',unit:'pct',price:''},{name:'Limpador Multiuso',qty:'',unit:'unid',price:''}], collapsed:false },
+  { id:'outros', label:'Outros', emoji:'🛍️', theme:'cat-outros', items:[], collapsed:false }
+];
+
+// ── SALVAMENTO ────────────────────────────────────────────────────
+const CHAVE = 'plannerComprasCelular_v1';
+
+function carregarDados() {
+  try {
+    const s = localStorage.getItem(CHAVE);
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return { cats: JSON.parse(JSON.stringify(CATEGORIES)), meta:{}, notes:'' };
+}
+
+function salvarDados() {
+  try {
+    const dados = {
+      cats: state,
+      meta: {
+        data:   document.getElementById('meta-data')?.value || '',
+        local:  document.getElementById('meta-local')?.value || '',
+        resp:   document.getElementById('meta-resp')?.value || '',
+        budget: document.getElementById('budget')?.value || ''
+      },
+      notes: window._notes || ''
+    };
+    const json = JSON.stringify(dados);
+    localStorage.setItem(CHAVE, json);
+    // Confirma que foi salvo lendo de volta
+    const verificar = localStorage.getItem(CHAVE);
+    if (!verificar) throw new Error('Falha ao verificar');
+
+    const btn = document.getElementById('btn-salvar');
+    if (btn) {
+      btn.innerHTML = '<span class="icon">✅</span>Salvo!';
+      btn.style.background = '#7a9068';
+      clearTimeout(window._saveTimer);
+      window._saveTimer = setTimeout(() => {
+        btn.innerHTML = '<span class="icon">💾</span>Salvar';
+        btn.style.background = '';
+      }, 2500);
+    }
+    return true;
+  } catch(e) {
+    alert('⚠️ Não foi possível salvar. Verifique se o armazenamento do navegador está habilitado.');
+    return false;
+  }
+}
+
+const saved = carregarDados();
+let state = saved.cats || JSON.parse(JSON.stringify(CATEGORIES));
+
+// ── RENDER ────────────────────────────────────────────────────────
+function render() {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
+  state.forEach((cat, ci) => {
+    const div = document.createElement('div');
+    div.className = `category ${cat.theme}`;
+
+    const itemCards = cat.items.map((item, ii) => `
+      <div class="item-card ${item.done ? 'done' : ''}">
+        <div class="check-btn ${item.done ? 'checked' : ''}" onclick="toggleDone(${ci},${ii})">
+          ${item.done ? '✓' : ''}
+        </div>
+        <div class="item-main">
+          <input class="item-name-input" type="text" placeholder="Nome do produto…"
+            value="${escHtml(item.name)}" oninput="updateField(${ci},${ii},'name',this.value)">
+          <div class="item-sub-row">
+            <span class="sub-label">Qtd</span>
+            <input class="item-sub-input qty" type="text" inputmode="decimal" placeholder="—"
+              value="${escHtml(item.qty)}" oninput="updateField(${ci},${ii},'qty',this.value)">
+            <span class="sub-label">Un</span>
+            <input class="item-sub-input unit" type="text" placeholder="unid"
+              value="${escHtml(item.unit)}" oninput="updateField(${ci},${ii},'unit',this.value)">
+            <span class="sub-label">R$</span>
+            <input class="item-sub-input price" type="text" inputmode="decimal" placeholder="0,00"
+              value="${escHtml(item.price)}" oninput="updateField(${ci},${ii},'price',this.value)">
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteItem(${ci},${ii})">✕</button>
+      </div>
+    `).join('');
+
+    div.innerHTML = `
+      <div class="cat-header" onclick="toggleCat(${ci})">
+        <div class="cat-left">
+          <span class="cat-emoji">${cat.emoji}</span>
+          <span class="cat-title">${cat.label}</span>
+          <span class="cat-count">(${cat.items.length})</span>
+        </div>
+        <div class="cat-actions" onclick="event.stopPropagation()">
+          <button class="add-item-btn" onclick="addItem(${ci})">+ item</button>
+          <button class="cat-toggle ${cat.collapsed ? 'collapsed' : ''}">▼</button>
+        </div>
+      </div>
+      <div class="cat-body ${cat.collapsed ? 'collapsed' : ''}">
+        ${cat.items.length === 0
+          ? '<div class="empty-cat">Nenhum item — toque em "+ item"</div>'
+          : itemCards}
+      </div>
+    `;
+    content.appendChild(div);
+  });
+
+  // totals
+  const { totalItems, doneItems, totalPrice } = getStats();
+  const totDiv = document.createElement('div');
+  totDiv.innerHTML = `
+    <div class="totals-card">
+      <div class="total-item"><label>Itens</label><div class="value">${totalItems}</div></div>
+      <div class="divider-v"></div>
+      <div class="total-item"><label>Comprados</label><div class="value">${doneItems}</div></div>
+      <div class="divider-v"></div>
+      <div class="total-item total-grand"><label>Total Est.</label><div class="value">R$ ${totalPrice}</div></div>
+    </div>
+  `;
+  content.appendChild(totDiv);
+
+  // notes
+  const notDiv = document.createElement('div');
+  notDiv.className = 'notes-card';
+  notDiv.innerHTML = `
+    <label>✦ Observações & Lembretes</label>
+    <textarea id="notes-area" placeholder="Lembretes, marcas preferidas, ofertas…">${window._notes || ''}</textarea>
+  `;
+  content.appendChild(notDiv);
+  document.getElementById('notes-area').addEventListener('input', e => {
+    window._notes = e.target.value;
+    clearTimeout(window._autoSave);
+    window._autoSave = setTimeout(salvarDados, 800);
+  });
+
+  updateProgress(doneItems, totalItems);
+}
+
+function escHtml(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function getStats() {
+  let totalItems=0, doneItems=0, totalPrice=0;
+  state.forEach(cat => cat.items.forEach(item => {
+    totalItems++;
+    if (item.done) doneItems++;
+    const p = parseFloat((item.price||'0').replace(',','.'));
+    const q = parseFloat((item.qty||'1').replace(',','.'));
+    if (!isNaN(p) && !isNaN(q)) totalPrice += p*q;
+  }));
+  return { totalItems, doneItems, totalPrice: totalPrice.toFixed(2).replace('.',',') };
+}
+
+function updateProgress(done, total) {
+  const pct = total===0 ? 0 : Math.round(done/total*100);
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('progress-pct').textContent = pct+'%';
+}
+
+// ── AÇÕES ─────────────────────────────────────────────────────────
+function toggleDone(ci, ii) {
+  state[ci].items[ii].done = !state[ci].items[ii].done;
+  render(); salvarDados();
+}
+
+function updateField(ci, ii, field, val) {
+  state[ci].items[ii][field] = val;
+  const { totalItems, doneItems, totalPrice } = getStats();
+  const tv = document.querySelectorAll('.totals-card .value');
+  if (tv[2]) tv[2].textContent = 'R$ ' + totalPrice;
+  updateProgress(doneItems, totalItems);
+  clearTimeout(window._autoSave);
+  window._autoSave = setTimeout(salvarDados, 800);
+}
+
+function addItem(ci) {
+  state[ci].items.push({ name:'', qty:'', unit:'unid', price:'', done:false });
+  render();
+  salvarDados();
+  // Rola até o cabeçalho da categoria e foca no novo item
+  setTimeout(() => {
+    const categorias = document.querySelectorAll('.category');
+    if (categorias[ci]) {
+      categorias[ci].scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }
+    // Foca no último input de nome dentro desta categoria
+    const inputs = categorias[ci]?.querySelectorAll('.item-name-input');
+    if (inputs && inputs.length) inputs[inputs.length - 1].focus();
+  }, 80);
+}
+
+function deleteItem(ci, ii) {
+  if (!confirm('Remover este item?')) return;
+  state[ci].items.splice(ii, 1);
+  render(); salvarDados();
+}
+
+function toggleCat(ci) {
+  state[ci].collapsed = !state[ci].collapsed;
+  render(); salvarDados();
+}
+
+function addCategory() {
+  const name = prompt('Nome da nova categoria:');
+  if (!name) return;
+  const emoji = prompt('Emoji (ex: 🥗):', '📦') || '📦';
+  const themes = ['cat-hortifruti','cat-pereciveis','cat-nao-pereciveis','cat-higiene','cat-limpeza','cat-laticinios','cat-bebidas','cat-outros'];
+  state.push({ id:'cat_'+Date.now(), label:name, emoji, theme:themes[state.length%themes.length], items:[], collapsed:false });
+  render(); salvarDados();
+}
+
+function sortAllAlpha() {
+  state.forEach(cat => cat.items.sort((a,b) => a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'})));
+  render(); salvarDados();
+}
+
+function clearChecked() {
+  if (!confirm('Remover todos os itens marcados?')) return;
+  state.forEach(cat => { cat.items = cat.items.filter(i => !i.done); });
+  render(); salvarDados();
+}
+
+// ── RESTAURAR META ────────────────────────────────────────────────
+(function() {
+  const m = saved.meta || {};
+  if (m.data)   document.getElementById('meta-data').value   = m.data;
+  if (m.local)  document.getElementById('meta-local').value  = m.local;
+  if (m.resp)   document.getElementById('meta-resp').value   = m.resp;
+  if (m.budget) document.getElementById('budget').value      = m.budget;
+  if (saved.notes) window._notes = saved.notes;
+  if (!m.data) {
+    const d = new Date();
+    document.getElementById('meta-data').value =
+      String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+  }
+  ['meta-data','meta-local','meta-resp','budget'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', salvarDados);
+  });
+})();
+
+render();
+</script>
+
+
+</body></html>
